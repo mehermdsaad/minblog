@@ -1,71 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Blog</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 1rem 0;
-            text-align: center;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            color: #333;
-        }
-        a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px 0;
-            background: #333;
-            color: #fff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>minblog</title>
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Blog</h1>
-    </header>
-    <div class="container">
-        <article>
-            <h2>Blog Post Title</h2>
-            <p>Posted on <time datetime="2023-10-01">October 1, 2023</time></p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sit amet accumsan arcu. Nulla facilisi. Donec vel libero at lectus rutrum vestibulum vitae ut turpis.</p>
-            <a href="#">Read more...</a>
-        </article>
-        <hr>
-        <article>
-            <h2>Another Blog Post</h2>
-            <p>Posted on <time datetime="2023-09-25">September 25, 2023</time></p>
-            <p>Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Proin eget tortor risus. Nulla quis lorem ut libero malesuada feugiat.</p>
-            <a href="#">Read more...</a>
-        </article>
-    </div>
-    <footer>
-        <p>&copy; 2023 My Blog. All rights reserved.</p>
-    </footer>
+
+<div class="book" id="book">
+  <div class="page"><p>afsdjjjjjjjjjjjjjjjjjjjjjjjjjjjhklkajsdfhkjasfhkashdfkjlsdahfkljasdbfouashunscnvkljabvilkjbaslkjfbdsalkjfsdnfkljdsahfdajskbasdfjkmasdfnljasdncakslcbasdlkasdbkdsj 1</p></div>
+  <div class="page"><p>afsdjjjjjjjjjjjjjjjjjjjjjjjjjjjhklkajsdfhkjasfhkashdfkjlsdahfkljasdbfouashunscnvkljabvilkjbaslkjfbdsalkjfsdnfkljdsahfdajskbasdfjkmasdfnljasdncakslcbasdlkasdbkdsj 2</p></div>
+  <div class="page"><p>afsdjjjjjjjjjjjjjjjjjjjjjjjjjjjhklkajsdfhkjasfhkashdfkjlsdahfkljasdbfouashunscnvkljabvilkjbaslkjfbdsalkjfsdnfkljdsahfdajskbasdfjkmasdfnljasdncakslcbasdlkasdbkdsj 3</p></div>
+</div>
+
+<button style="z-index: 10; margin: 400px 0 10px 10px;" onclick="unflipPage()">Previous</button>
+  <button style="z-index: 10; margin: 400px 0 10px 10px;" onclick="flipPage()">Next</button>
+  
+<script>
+    let currentPage = 0;
+    const pages = document.querySelectorAll('.page');
+
+    function flipPage() {
+    if (currentPage < pages.length) {
+        const page = pages[pages.length - currentPage - 1];
+        
+        const index = currentPage;
+        
+        page.classList.add('flipped');
+
+        // Delay z-index change until after flip animation
+        setTimeout(() => {
+        page.style.zIndex = -(pages.length - index); // progressively lower z-index
+        }, 500);
+
+        currentPage++;
+    }
+    }
+
+    function unflipPage() {
+    if (currentPage > 0) {
+        currentPage--; // move pointer back
+
+        const page = pages[pages.length - currentPage - 1];
+        page.style.zIndex = 1;
+        page.classList.remove('flipped');
+        
+    }
+    }
+</script>
+
 </body>
 </html>

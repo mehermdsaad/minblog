@@ -9,9 +9,9 @@
 
 <div class="book" id="book">
   <div class="page" id="pg-1">
-    <div class="left">Page 1 Left</div>
+    <div class="left" contenteditable="true">Page 1 Left</div>
     <div class="middle"></div>
-    <div class="right">Page 1 Right</div>
+    <div class="right" contenteditable="true"></div>
   </div>
   <div class="page" id="pg-2">
     <div class="left">Page 2 Left</div>
@@ -39,8 +39,8 @@
   </div> -->
 </div>
 
-<button style="z-index: 10; margin: 400px 0 10px 10px;" onclick="unflipPage()">Previous</button>
-<button style="z-index: 10; margin: 400px 0 10px 10px;" onclick="flipPage()">Next</button>
+<button style="position: absolute; bottom: 20px; right: 100px; z-index: 10;" onclick="unflipPage()">Previous</button>
+<button style="position: absolute; bottom: 20px; right: 100px; z-index: 10;" onclick="flipPage()">Next</button>
   
 <script>4
     let currentPage = 0;

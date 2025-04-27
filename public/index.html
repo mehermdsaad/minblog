@@ -8,21 +8,51 @@
 <body>
 
 <div class="book" id="book">
-  <div class="page"><p>afsdjjjjjjjjjjjjjjjjjjjjjjjjjjjhklkajsdfhkjasfhkashdfkjlsdahfkljasdbfouashunscnvkljabvilkjbaslkjfbdsalkjfsdnfkljdsahfdajskbasdfjkmasdfnljasdncakslcbasdlkasdbkdsj 1</p></div>
-  <div class="page"><p>afsdjjjjjjjjjjjjjjjjjjjjjjjjjjjhklkajsdfhkjasfhkashdfkjlsdahfkljasdbfouashunscnvkljabvilkjbaslkjfbdsalkjfsdnfkljdsahfdajskbasdfjkmasdfnljasdncakslcbasdlkasdbkdsj 2</p></div>
-  <div class="page"><p>afsdjjjjjjjjjjjjjjjjjjjjjjjjjjjhklkajsdfhkjasfhkashdfkjlsdahfkljasdbfouashunscnvkljabvilkjbaslkjfbdsalkjfsdnfkljdsahfdajskbasdfjkmasdfnljasdncakslcbasdlkasdbkdsj 3</p></div>
+  <div class="page" id="pg-1">
+    <div class="left">Page 1 Left</div>
+    <div class="middle"></div>
+    <div class="right">Page 1 Right</div>
+  </div>
+  <div class="page" id="pg-2">
+    <div class="left">Page 2 Left</div>
+    <div class="middle"></div>
+    <div class="right">Page 2 Right</div>
+  </div>
+  <div class="page" id="pg-3">
+    <div class="left">Page 3 Left</div>
+    <div class="middle"></div>
+    <div class="right">Page 3 Right</div>
+  </div>
+  <div class="page" id="pg-4">
+    <div class="left">Page 4 Left</div>
+    <div class="middle"></div>
+    <div class="right">Page 4 Right</div>
+  </div>
+  <!-- 
+  <div class="page" id="pg-3">
+    <div class="left">Page 3 Left</div>
+    <div class="right">Page 3 Right</div>
+  </div>
+  <div class="page" id="pg-4">
+    <div class="left">Page 4 Left</div>
+    <div class="right">Page 4 Right</div>
+  </div> -->
 </div>
 
 <button style="z-index: 10; margin: 400px 0 10px 10px;" onclick="unflipPage()">Previous</button>
-  <button style="z-index: 10; margin: 400px 0 10px 10px;" onclick="flipPage()">Next</button>
+<button style="z-index: 10; margin: 400px 0 10px 10px;" onclick="flipPage()">Next</button>
   
-<script>
+<script>4
     let currentPage = 0;
     const pages = document.querySelectorAll('.page');
 
+    // for(int i=0)
     function flipPage() {
     if (currentPage < pages.length) {
         const page = pages[pages.length - currentPage - 1];
+        
+        const left = page.querySelector('.left');
+        const right = page.querySelector('.right');
         
         const index = currentPage;
         
@@ -31,7 +61,9 @@
         // Delay z-index change until after flip animation
         setTimeout(() => {
         page.style.zIndex = -(pages.length - index); // progressively lower z-index
-        }, 500);
+        left.style.zIndex = -1;
+        right.style.zIndex = 1;
+        }, 300);
 
         currentPage++;
     }
@@ -42,8 +74,19 @@
         currentPage--; // move pointer back
 
         const page = pages[pages.length - currentPage - 1];
+        const left = page.querySelector('.left');
+        const right = page.querySelector('.right');
+        
         page.style.zIndex = 1;
+        
+        
+
         page.classList.remove('flipped');
+
+        setTimeout(() => {
+          left.style.zIndex = 1;
+          right.style.zIndex = -1;
+        }, 300);
         
     }
     }

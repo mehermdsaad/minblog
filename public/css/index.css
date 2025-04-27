@@ -18,8 +18,7 @@ body{
     align-items: center;
 }
 
-.page, 
-.cover{
+.page{
     height: 300px;
     width: 260px;
     background-color: bisque;
@@ -29,10 +28,44 @@ body{
     transition: transform 1s ease;
     overflow: hidden;
     word-wrap: break-word;
-    padding: 20px;
+    padding: 0px;
     box-sizing: border-box;
     transform: rotateX(0deg);
 }
+
+.left, .right{
+    position: absolute;
+}
+.left{
+    z-index: 1;
+}
+.right{
+    z-index: -1;
+}
+
+.middle{
+    z-index: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: bisque;
+}
+
+.right {
+    transform: rotateY(-180deg);
+    text-align: left;
+    width: 100%;
+}
+/* .page:not(.flipped) .right {
+    display: none;
+}
+.flipped .left{
+    display: none;
+} */
+/* .page:not(.flipped) .left {
+    display: none;
+} */
+
 
 .page.flipped {
     transform: rotateY(-180deg) rotateX(-5deg);

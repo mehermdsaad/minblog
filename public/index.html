@@ -3,30 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>minblog</title>
+  <link rel="icon" href="assets/cursor.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 
 <div class="book" id="book">
-  <div class="page" id="pg-1">
-    <div class="left" contenteditable="true">Page 1 Left</div>
+  <div class="page" data-pg="1" spellcheck="false" id="pg-1">
+    <div class="left"><div class="page-content" contenteditable="true">This was not to be despite</div></div>
     <div class="middle"></div>
-    <div class="right" contenteditable="true"></div>
+    <div class="right">1 RIGHT PAGE</div>
   </div>
-  <div class="page" id="pg-2">
-    <div class="left">Page 2 Left</div>
+  <div class="page" data-pg="2" spellcheck="false" id="pg-1">
+    <div class="left" contenteditable="true">2 LEFT PAGE</div>
     <div class="middle"></div>
-    <div class="right">Page 2 Right</div>
+    <div class="right" contenteditable="true">2 RIGHT PAGE</div>
   </div>
-  <div class="page" id="pg-3">
-    <div class="left">Page 3 Left</div>
+  <div class="page" data-pg="3" spellcheck="false" id="pg-1">
+    <div class="left" contenteditable="true">3 LEFT PAGE</div>
     <div class="middle"></div>
-    <div class="right">Page 3 Right</div>
+    <div class="right" contenteditable="true">3 RIGHT PAGE</div>
   </div>
-  <div class="page" id="pg-4">
-    <div class="left">Page 4 Left</div>
-    <div class="middle"></div>
-    <div class="right">Page 4 Right</div>
   </div>
   <!-- 
   <div class="page" id="pg-3">
@@ -42,28 +41,52 @@
 <button style="position: absolute; bottom: 20px; right: 100px; z-index: 10;" onclick="unflipPage()">Previous</button>
 <button style="position: absolute; bottom: 20px; right: 100px; z-index: 10;" onclick="flipPage()">Next</button>
   
-<script>4
+<script>
     let currentPage = 0;
     const pages = document.querySelectorAll('.page');
 
-    // for(int i=0)
+    for(let i=0;i<pages.length;i++){
+      const page = pages[pages.length-i-1];
+      page.style.zIndex = 3*i;
+    }
+
+    document.addEventListener('keydown', function(event) {
+      // Check if Ctrl (or Cmd on Mac) is pressed and the key is "n"
+      if ((event.ctrlKey || event.metaKey) && event.key === 'ArrowLeft') {
+        event.preventDefault(); // Stop browser from opening new window
+        flipPage(); // Call your custom page-flip function
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key === 'ArrowRight') {
+        event.preventDefault(); // Stop browser from opening new window
+        unflipPage(); // Call your custom page-flip function
+      }
+    });
+
     function flipPage() {
     if (currentPage < pages.length) {
-        const page = pages[pages.length - currentPage - 1];
+        const page = pages[currentPage];
         
         const left = page.querySelector('.left');
+        const middle = page.querySelector('.middle');
         const right = page.querySelector('.right');
         
         const index = currentPage;
         
-        page.classList.add('flipped');
-
+        page.classList.add('flipping');
+        right.style.visibility = 'visible';
         // Delay z-index change until after flip animation
         setTimeout(() => {
-        page.style.zIndex = -(pages.length - index); // progressively lower z-index
-        left.style.zIndex = -1;
-        right.style.zIndex = 1;
-        }, 300);
+          page.classList.remove('flipping');
+          page.classList.add('flipped');
+
+          page.style.zIndex = -3*(pages.length-page.dataset.pg); // progressively lower z-index
+          left.style.zIndex = Number(page.style.zIndex)-1;
+          middle.style.zIndex = Number(page.style.zIndex);
+          right.style.zIndex = Number(page.style.zIndex)+1;
+          left.style.visibility = 'hidden';
+          right.contentEditable = 'true';
+          left.contentEditable = 'false';
+        }, 500);
 
         currentPage++;
     }
@@ -73,23 +96,59 @@
     if (currentPage > 0) {
         currentPage--; // move pointer back
 
-        const page = pages[pages.length - currentPage - 1];
+        const page = pages[currentPage];
         const left = page.querySelector('.left');
+        const middle = page.querySelector('.middle');
         const right = page.querySelector('.right');
         
-        page.style.zIndex = 1;
-        
+        page.style.zIndex = 3*(pages.length-page.dataset.pg);
+        left.style.visibility = 'visible';
         
 
         page.classList.remove('flipped');
+        page.classList.add('flipping');
 
         setTimeout(() => {
-          left.style.zIndex = 1;
-          right.style.zIndex = -1;
-        }, 300);
+          page.classList.remove('flipping');
+          left.style.zIndex = Number(page.style.zIndex)+1;
+          middle.style.zIndex = Number(page.style.zIndex);
+          right.style.zIndex = Number(page.style.zIndex)-1;
+          right.style.visibility = 'hidden';
+        }, 500);
         
     }
     }
+
+
+
+
+
+
+
+const contentDiv = document.querySelector('.page-content');
+
+contentDiv.addEventListener('input', () => {
+  const lineHeight = parseFloat(getComputedStyle(contentDiv).lineHeight);
+  const maxHeight = lineHeight * 20;
+
+  if (contentDiv.scrollHeight > maxHeight) {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const caretOffset = range.startOffset;
+
+    // Don't use trim here
+    const text = contentDiv.innerText;
+    contentDiv.innerText = text.slice(0, -1); // remove last character including space
+
+    // Restore caret
+    const newRange = document.createRange();
+    newRange.setStart(contentDiv.childNodes[0], Math.min(caretOffset - 1, contentDiv.innerText.length));
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+});
+
 </script>
 
 </body>

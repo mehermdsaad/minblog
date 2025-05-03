@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>minblog</title>
-  <link rel="icon" href="assets/cursor.png" type="image/png">
+  <link rel="icon" href="img/cursor.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica+SC&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/index.css">
@@ -14,18 +14,19 @@
   <div class="page" data-pg="1" spellcheck="false" id="pg-1">
     <div class="left"><div class="page-content" contenteditable="true">This was not to be despite</div></div>
     <div class="middle"></div>
-    <div class="right">1 RIGHT PAGE</div>
+    <div class="right"><div class="page-content" contenteditable="false">1 RIGHT PAGE</div></div>
   </div>
-  <div class="page" data-pg="2" spellcheck="false" id="pg-1">
-    <div class="left" contenteditable="true">2 LEFT PAGE</div>
+  <div class="page" data-pg="2" spellcheck="false" id="pg-2">
+    <div class="left"><div class="page-content" contenteditable="true">This was not to be despite</div></div>
     <div class="middle"></div>
-    <div class="right" contenteditable="true">2 RIGHT PAGE</div>
+    <div class="right"><div class="page-content" contenteditable="false">1 RIGHT PAGE</div></div>
   </div>
-  <div class="page" data-pg="3" spellcheck="false" id="pg-1">
-    <div class="left" contenteditable="true">3 LEFT PAGE</div>
+  <div class="page" data-pg="3" spellcheck="false" id="pg-3">
+    <div class="left"><div class="page-content" contenteditable="true">This was not to be despite</div></div>
     <div class="middle"></div>
-    <div class="right" contenteditable="true">3 RIGHT PAGE</div>
+    <div class="right"><div class="page-content" contenteditable="false">1 RIGHT PAGE</div></div>
   </div>
+ 
   </div>
   <!-- 
   <div class="page" id="pg-3">
@@ -38,9 +39,9 @@
   </div> -->
 </div>
 
-<button style="position: absolute; bottom: 20px; right: 100px; z-index: 10;" onclick="unflipPage()">Previous</button>
+<!-- <button style="position: absolute; bottom: 20px; right: 100px; z-index: 10;" onclick="unflipPage()">Previous</button>
 <button style="position: absolute; bottom: 20px; right: 100px; z-index: 10;" onclick="flipPage()">Next</button>
-  
+   -->
 <script>
     let currentPage = 0;
     const pages = document.querySelectorAll('.page');
@@ -69,6 +70,10 @@
         const left = page.querySelector('.left');
         const middle = page.querySelector('.middle');
         const right = page.querySelector('.right');
+
+        
+        const leftContent = left.querySelector('.page-content');
+        const rightContent = right.querySelector('.page-content');
         
         const index = currentPage;
         
@@ -84,8 +89,8 @@
           middle.style.zIndex = Number(page.style.zIndex);
           right.style.zIndex = Number(page.style.zIndex)+1;
           left.style.visibility = 'hidden';
-          right.contentEditable = 'true';
-          left.contentEditable = 'false';
+          rightContent.contentEditable = 'true';
+          leftContent.contentEditable = 'false';
         }, 500);
 
         currentPage++;
@@ -100,6 +105,10 @@
         const left = page.querySelector('.left');
         const middle = page.querySelector('.middle');
         const right = page.querySelector('.right');
+
+        const leftContent = left.querySelector('.page-content');
+        const rightContent = right.querySelector('.page-content');
+        
         
         page.style.zIndex = 3*(pages.length-page.dataset.pg);
         left.style.visibility = 'visible';
@@ -114,6 +123,8 @@
           middle.style.zIndex = Number(page.style.zIndex);
           right.style.zIndex = Number(page.style.zIndex)-1;
           right.style.visibility = 'hidden';
+          rightContent.contentEditable = 'false';
+          leftContent.contentEditable = 'true';
         }, 500);
         
     }
@@ -121,33 +132,142 @@
 
 
 
+function getVisibleCaretPosition(container) {
+  const selection = window.getSelection();
 
+  if (!selection.rangeCount) return null;
+
+  const range = selection.getRangeAt(0).cloneRange();
+  range.collapse(true); // Collapse to caret
+
+  let caretRect = range.getClientRects()[0];
+
+  // Fallback if range is at the very end or collapsed into nothing
+  if (!caretRect) {
+    const dummy = document.createElement('span');
+    dummy.innerHTML = '&#8203;'; // Zero-width space
+    range.insertNode(dummy);
+    caretRect = dummy.getBoundingClientRect();
+    dummy.remove();
+  }
+
+  const containerRect = container.getBoundingClientRect();
+
+  // Clamp caret position to visible container bounds
+  const clampedX = Math.min(Math.max(caretRect.left, containerRect.left), containerRect.right);
+  const clampedY = Math.min(Math.max(caretRect.top, containerRect.top), containerRect.bottom);
+
+  return {
+    x: clampedX - containerRect.left, // relative to container
+    y: clampedY - containerRect.top,
+    height: caretRect.height
+  };
+}
+
+function getLastTextNode(node) {
+  while (node && node.lastChild) {
+    node = node.lastChild;
+  }
+  return node.nodeType === Node.TEXT_NODE ? node : null;
+}
 
 
 
 const contentDiv = document.querySelector('.page-content');
+let prevCaretPos = 0;
+let prevCharCount = 0;
 
 contentDiv.addEventListener('input', () => {
   const lineHeight = parseFloat(getComputedStyle(contentDiv).lineHeight);
-  const maxHeight = lineHeight * 20;
+  const maxHeight = lineHeight * 23;
+
+  const contentHeight = contentDiv.getBoundingClientRect().height;
+  
 
   if (contentDiv.scrollHeight > maxHeight) {
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
+
+    const caretNode = range.startContainer;
     const caretOffset = range.startOffset;
 
-    // Don't use trim here
-    const text = contentDiv.innerText;
-    contentDiv.innerText = text.slice(0, -1); // remove last character including space
+    let text = contentDiv.innerText;
+    text = text.slice(0, -1)
+    
+    while(contentDiv.scrollHeight > maxHeight){
+      text = text.slice(0, -1);
+      contentDiv.innerText = text;
+    }
+    contentDiv.innerText = text;
+    console.log(`#${text}#`)
+  
+    
+    const charCount = contentDiv.innerText.length;
 
-    // Restore caret
+    const newTextNode = getLastTextNode(contentDiv);
+    if (!newTextNode) return;
+    
+    
+    const newOffset = Math.max(0, newTextNode.length);
+
+    const caretRead = getVisibleCaretPosition(contentDiv);
     const newRange = document.createRange();
-    newRange.setStart(contentDiv.childNodes[0], Math.min(caretOffset - 1, contentDiv.innerText.length));
+
+    try {
+      newRange.setStart(newTextNode, newOffset);  
+    } catch (error) {
+      newRange.setStart(newTextNode, newOffset-1);
+    }
     newRange.collapse(true);
     selection.removeAllRanges();
     selection.addRange(newRange);
   }
+  else{
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    const caretNode = range.startContainer;
+    const caretOffset = range.startOffset;
+
+    const caretRead = getVisibleCaretPosition(contentDiv);
+
+    const charCount = contentDiv.innerText.length;
+    
+    if (caretRead===prevCaretPos && prevCharCount<charCount){
+        let text = contentDiv.innerText;
+        while(text[text.length - 1] === ' '){
+        // while(contentDiv.scrollHeight > maxHeight){
+          text = text.slice(0, -1);
+          contentDiv.innerText = text;
+        }
+        contentDiv.innerText = text;
+        console.log(`##${text}##`)
+
+
+        const newTextNode = getLastTextNode(contentDiv);
+        if (!newTextNode) return;
+        
+        const newOffset = Math.max(0, newTextNode.length);
+
+        const newRange = document.createRange();
+
+        try {
+          newRange.setStart(newTextNode, newOffset);  
+        } catch (error) {
+          newRange.setStart(newTextNode, newOffset-1);
+        }
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+    }
+
+    prevCaretPos=caretRead;
+    prevCharCount=charCount;
+    
+  }
 });
+
+
 
 </script>
 
